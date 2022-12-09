@@ -3,6 +3,7 @@ export interface Info {
     image: string,
     id: string,
     desc: string,
+    page: string,
 }
 
 export type ApiInfo = Omit<Info, 'id'>;

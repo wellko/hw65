@@ -4,37 +4,44 @@ import {ApiInfo} from "../../types";
 import axiosApi from "../../axios-api";
 
 const Content = () => {
-    const {pageName} = useParams();
+	const {pageName} = useParams();
 
-    const [hero, setHero] = useState<ApiInfo>( {
-        title:'',
-        image:'',
-        desc: '',
-    });
+	const [spinner, setSpinner] = useState(false);
 
-    const fetchHeroes = useCallback(async  () => {
-        const url = '/pages/' + pageName + '.json'
-        try {
-            const response  = await axiosApi<ApiInfo>(url);
-            if (response){
-                setHero(response.data);
-            }
-        } finally {
+	const [hero, setHero] = useState<ApiInfo>({
+		title: '',
+		image: '',
+		desc: '',
+		page: '',
+	});
 
-        }}, [pageName]
-    );
+	const fetchHeroes = useCallback(async () => {
+			setSpinner(true);
+			const url = '/pages/' + pageName + '.json'
+			try {
+				const response = await axiosApi<ApiInfo>(url);
+				if (response) {
+					setHero(response.data);
+				}
+			} finally {
+				setSpinner(false);
+			}
+		}, [pageName]
+	);
 
-    useEffect(()=>{
-        fetchHeroes().catch(console.error);
-    }, [fetchHeroes]);
 
-    return (
-        <div>
-            <h1>{hero.title}</h1>
-            <p>{hero.desc}</p>
-            <img src={hero.image} alt="hero"/>
-        </div>
-    );
+	useEffect(() => {
+		fetchHeroes().catch(console.error);
+	}, [fetchHeroes]);
+
+	return (<>
+		{spinner ? (<div className="spinner-border text-success" role="status">
+			</div>) :
+			(<div>
+				<h1><img src={hero.image} alt="hero"/>{hero.title}</h1>
+				<p dangerouslySetInnerHTML={{__html: hero.desc}}></p>
+			</div>)}
+	</>);
 };
 
 export default Content;
